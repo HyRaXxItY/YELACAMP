@@ -6,7 +6,8 @@ const Campground = require('./models/campground.js');
 const methodOverride = require('method-override');
 const ExpressError = require('./utils/ExpressError')
 const catchAsync = require('./utils/catchAsync')
-
+const Joi = require('joi');
+const { campgroundSchema } = require('./schemas')
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -24,7 +25,6 @@ db.once("open", () => {
 
 
 
-
 const app = express(); // app is only after we've integrated the database
 
 app.engine('ejs', ejsMate);
@@ -36,6 +36,17 @@ app.use(methodOverride('_method'));
 // an app.use( code )
 // everything that is there in ""code"" will be executed Everytime the web server runs // basically on every single request
 // we can call it a middleware 
+
+
+const validateCampground = function (err, req, res, next) {
+    const { error } = campgroundSchema.validate(req.body);
+    if (error) {
+        const message = error.details.map(el => el.message).join(',  ');
+        throw new ExpressError(message, 404);
+    } else {
+        next();
+    }
+}
 
 app.get('/', (req, res) => {
     res.render('campgrounds/home')
@@ -51,8 +62,8 @@ app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new')
 })
 
-app.post('/campgrounds', catchAsync(async (req, res) => {
-    if (!req.body.campground) throw new ExpressError('invalid data', 400);
+app.post('/campgrounds', validateCampground, catchAsync(async (req, res) => {
+    // if (!req.body.campground) throw new ExpressError('invalid data', 400);
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`)
@@ -78,7 +89,7 @@ app.get('/campgrounds/:id/edit', catchAsync(async (req, res) => {
 }))
 
 
-app.put('/campgrounds/:id', catchAsync(async (req, res) => {
+app.put('/campgrounds/:id', validateCampground, catchAsync(async (req, res) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     // res.render('campgrounds/show', { camp })
@@ -97,6 +108,7 @@ app.all('*', (req, res, next) => {
 })
 app.use((err, req, res, next) => {
     const { status_code = 404, message = 'oh boy, we got some error there' } = err;
+
     res.status(status_code).render('error/error', { err });
 })
 
