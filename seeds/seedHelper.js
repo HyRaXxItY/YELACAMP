@@ -19,6 +19,7 @@ module.exports.descriptors = [
     'Diamond'
 ]
 
+
 module.exports.places = [
     'Flats',
     'Village',
