@@ -11,6 +11,7 @@ const { campgroundSchema, reviewSchema } = require('./schemas.js');
 const Review = require('./models/review');
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
+const session = require('express-session');
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp', {
     useNewUrlParser: true,
@@ -27,7 +28,6 @@ db.once("open", () => {
 
 
 
-
 const app = express(); // app is only after we've integrated the database
 
 app.engine('ejs', ejsMate);
@@ -41,36 +41,28 @@ app.use(express.static(path.join(__dirname, 'public')));
 // everything that is there in ""code"" will be executed Everytime the web server runs // basically on every single request
 // we can call it a middleware 
 
+const sessionConfig = {
+    secret: 'ThisBetterBeAGoodShit',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7
 
-const validateCampground = function (err, req, res, next) {
-    const { error } = campgroundSchema.validate(req.body)
-    if (error) {
-        const message = error.details.map(el => el.message).join(',  ');
-        throw new ExpressError(message, 404);
-    } else {
-        next();
-    }
-}
-const validateReview = function (err, req, res, next) {
-    const { error } = reviewSchema.validate(req.body);
-    console.log(error);
-    if (error) {
-        const message = error.details.map(el => el.message).join(', \n ');
-        throw new ExpressError(message, 404);
-    } else {
-        next();
     }
 }
 
 
+app.use(session(sessionConfig));
+app.use('/campgrounds', campgrounds);
+
+app.use('/campgrounds/:id/reviews', reviews);
 
 app.get('/', (req, res) => {
     res.render('campgrounds/home')
 })
 
-app.use('/campgrounds', campgrounds);
-
-app.use('/campgrounds/:id/reviews', reviews);
 
 app.all('*', (req, res, next) => {
     next(new ExpressError('PAGE NOT FOUND', 404))
