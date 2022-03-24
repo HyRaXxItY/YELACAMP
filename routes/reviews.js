@@ -1,5 +1,5 @@
 const express = require('express');
-const { route } = require('./campgrounds');
+// const { route } = require('./campgrounds');
 const router = express.Router({ mergeParams: true });
 const Campground = require('../models/campground.js');
 const ExpressError = require('../utils/ExpressError');

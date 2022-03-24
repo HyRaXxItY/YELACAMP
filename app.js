@@ -35,7 +35,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // an app.use( code )
 // everything that is there in ""code"" will be executed Everytime the web server runs // basically on every single request
@@ -43,7 +43,7 @@ app.use(express.static('public'));
 
 
 const validateCampground = function (err, req, res, next) {
-    const { error } = campgroundSchema.validate(req.body);
+    const { error } = campgroundSchema.validate(req.body)
     if (error) {
         const message = error.details.map(el => el.message).join(',  ');
         throw new ExpressError(message, 404);
