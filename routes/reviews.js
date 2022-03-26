@@ -28,6 +28,7 @@ router.post('/', validateReview, catchAsync(async (req, res) => {
     campground.reviews.push(review);
     await review.save();
     await campground.save();
+    req.flash('success', 'Review created successfully');
     res.redirect(`/campgrounds/${campground._id}`)
 
 
@@ -41,6 +42,7 @@ router.delete('/:reviewId', catchAsync(async (req, res) => {
     // pull--> literally pulls the value from the array ( here it pulls reviews array element having 
     // element id as reviewId )
     await Review.findByIdAndDelete(reviewId);
+    req.flash('success', 'Review deleted successfully');
     res.redirect(`/campgrounds/${id}`);
 
 }))
