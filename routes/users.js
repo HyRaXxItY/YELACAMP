@@ -39,7 +39,9 @@ router.post('/login', passport.authenticate('local', {
     failureRedirect: '/auth/login'
 }), (req, res) => {
     req.flash('success', 'welcome to advGuild');
-    res.redirect('/campgrounds');
+    const redirectUrl = req.session.returnTo || '/campgrounds';
+    delete req.session.returnTo;
+    res.redirect(redirectUrl);
 });
 
 router.get('/logout', (req, res) => {

@@ -1,8 +1,9 @@
 module.exports.isLoggedIn = function (req, res, next) {
     console.log(req.user);
-    if (req.isAuthenticated()) {
-        return next();
+    if (!req.isAuthenticated()) {
+        req.session.returnTo = req.originalUrl;
+        req.flash('error', 'You must be logged in to do that!');
+        return res.redirect('/auth/login');
     }
-    req.flash('error', 'You must be logged in to do that!');
-    res.redirect('/auth/login');
+    return next();
 }
