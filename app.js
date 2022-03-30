@@ -10,8 +10,11 @@ const catchAsync = require('./utils/catchAsync');
 const Joi = require('joi');
 const { campgroundSchema, reviewSchema } = require('./schemas.js');
 const Review = require('./models/review');
-const campgrounds = require('./routes/campgrounds');
-const reviews = require('./routes/reviews');
+
+const campgroundsRoute = require('./routes/campgrounds');
+const reviewsRoute = require('./routes/reviews');
+const usersRoute = require('./routes/users');
+
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -79,9 +82,11 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/campgrounds', campgrounds);
+app.use('/campgrounds', campgroundsRoute);
 
-app.use('/campgrounds/:id/reviews', reviews);
+app.use('/campgrounds/:id/reviews', reviewsRoute);
+
+app.use('/auth', usersRoute);
 
 app.get('/', (req, res) => {
     res.render('campgrounds/home')
