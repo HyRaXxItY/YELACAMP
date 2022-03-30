@@ -29,7 +29,27 @@
 
           </ul>
         </li>
+        <% if(!currentUser) { %>
+        <li class="nav-item ml-auto">
+          <a class="nav-link" href="/auth/login">Login</a>
+        </li>
+
+        <li class="nav-item ml-auto">
+          <a class="nav-link" href="/auth/register">Sign Up</a>
+        </li>
+        <% } else if(currentUser) { %>
+        <li class="nav-item ml-auto" style="color:rgb(255, 255, 255)">
+          <a class="nav-link"><%= currentUser.username %> 👋🏻</a>
+        </li>
+        <li class="nav-item ml-auto">
+          <a class="nav-link" href="/auth/logout">Logout </a>
+        </li>
+        <% } %>
       </ul>
     </div>
   </div>
 </nav>
+
+
+
+<!-- tis thang wrong -->
