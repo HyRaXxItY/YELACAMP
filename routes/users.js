@@ -11,13 +11,11 @@ router.get('/register', (req, res) => {
 
 router.post('/register', catchAsync(async (req, res, next) => {
     try {
-        const { username, password, email } = req.body;
-        const newUser = new User({ username, password, email });
+        const { email, username, password } = req.body;
+        const newUser = new User({ email, username, password });
         const dis = await User.register(newUser, password);
-        console.log(dis);
-        req.login(dis, (err) => {
+        req.login(dis, err => {
             if (err) return next(err);
-            console.log("yeah you are - ", req.user.username);
             req.flash('success', 'You have been registered and logged in!');
             return res.redirect('/campgrounds');
         });
@@ -25,7 +23,7 @@ router.post('/register', catchAsync(async (req, res, next) => {
     catch (e) {
         req.flash('error', e.message);
         console.log(e);
-        res.redirect('/register');
+        res.redirect('auth/register');
 
     }
 }));

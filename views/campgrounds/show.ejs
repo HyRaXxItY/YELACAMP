@@ -22,14 +22,17 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><%= campground.location %> </li>
+                <li class="list-group-item"> submitted by - <%= campground.author.username %> </li>
                 <li class="list-group-item">$<%= campground.price%> / night </li>
             </ul>
+            <% if(currentUser && campground.author.equals(currentUser)) { %>
             <div class="card-body">
                 <a href="/campgrounds/<%= campground._id %>/edit" class="card-link btn btn-info ">UPDATE </a>
                 <form class="d-inline" action="/campgrounds/<%= campground._id %>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">DELETE </button>
                 </form>
             </div>
+            <% } %>
             <div class="card-footer text-muted">
                 <a href="/campgrounds"> All campgrounds </a>
             </div>
@@ -38,6 +41,7 @@
 
     </div>
     <div class="col-4">
+        <% if(currentUser){ %>
         <h3> Leave a review </h3>
         <form action="/campgrounds/<%=campground._id%>/reviews" class="form validated-form" method="POST" novalidate>
             <div class="mb-3">
@@ -55,12 +59,15 @@
                 <button class="btn btn-success"> Publish </button>
             </div>
         </form>
+        <% } %>
         <% for ( let review of campground.reviews ) { %>
         <div class="card m-2 p-2">
             <div class="card-body">
                 <h5 class="card-title"> rating : <%= review.rating %> / 5 </h5>
+                <p class="card-subtitle text-muted"> By - <%= review.author.username %> </p>
                 <p class="card-text"> <%= review.body %> </p>
             </div>
+            <% if(currentUser && review.author.equals(currentUser)) { %>
             <div class="m-2">
                 <form action="/campgrounds/<%=campground._id%>/reviews/<%=review._id%>?_method=DELETE" method="POST">
                     <button class="btn-sm btn-danger" type="submit">
@@ -68,6 +75,7 @@
                     </button>
                 </form>
             </div>
+            <% } %>
         </div>
         <% } %>
     </div>

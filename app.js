@@ -52,7 +52,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const sessionConfig = {
     secret: 'ThisBetterBeAGoodShit',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
         httpOnly: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
