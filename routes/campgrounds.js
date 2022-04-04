@@ -10,7 +10,8 @@ router.route('/')
     .post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCamp));
 
 router.get('/new', isLoggedIn, campgrounds.createCampGet);
-// must be above :id or otherwise it will be caught by the (:id) route as they have same param numbers
+// must be above :id or otherwise it will be caught by the (:id) route as they have same 
+// numbers of params and express get confused
 
 router.route('/:id')
     .get(catchAsync(campgrounds.showCampGet))
