@@ -5,25 +5,22 @@ const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
 const campgrounds = require('../controllers/campgrounds');
 
 
-router.get('/', catchAsync(campgrounds.index));
-
+router.route('/')
+    .get(catchAsync(campgrounds.index))
+    .post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCamp));
 
 router.get('/new', isLoggedIn, campgrounds.createCampGet);
+// must be above :id or otherwise it will be caught by the (:id) route as they have same param numbers
+
+router.route('/:id')
+    .get(catchAsync(campgrounds.showCampGet))
+    .put(isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.updateCamp))
+    .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCamp));
 
 
-router.post('/', isLoggedIn, validateCampground, catchAsync(campgrounds.createCamp));
-
-
-router.get('/:id', catchAsync(campgrounds.showCampGet));
 
 
 router.get('/:id/edit', isLoggedIn, isAuthor, catchAsync(campgrounds.editCampGet));
-
-
-router.put('/:id', isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.editCamp));
-
-
-router.delete('/:id', isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCamp));
 
 
 module.exports = router;
