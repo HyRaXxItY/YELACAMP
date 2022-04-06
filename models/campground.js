@@ -12,6 +12,11 @@ ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200');
 });
 
+ImageSchema.virtual('thumbnail2').get(function () {
+    return this.url.replace('/upload', '/upload/w_400');
+});
+
+
 const CampgroundSchema = new Schema({
     author: {
         type: Schema.Types.ObjectId,
@@ -22,6 +27,17 @@ const CampgroundSchema = new Schema({
     price: Number,
     description: String,
     location: String,
+    geometry: {
+        type: {
+            type: String, // Don't do `{ location: { type: String } }`
+            enum: ['Point'], // 'location.type' must be 'Point'
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    },
     reviews: [{
         type: Schema.Types.ObjectId,
         ref: 'Review'
