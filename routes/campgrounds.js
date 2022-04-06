@@ -3,11 +3,16 @@ const router = express.Router();
 const catchAsync = require('../utils/catchAsync');
 const { isLoggedIn, isAuthor, validateCampground } = require('../middleware');
 const campgrounds = require('../controllers/campgrounds');
+const multer = require('multer');
+const { storage } = require('../cloudinary');
+const upload = multer({ storage });
+const { cloudinary } = require('../cloudinary');
+
 
 
 router.route('/')
     .get(catchAsync(campgrounds.index))
-    .post(isLoggedIn, validateCampground, catchAsync(campgrounds.createCamp));
+    .post(isLoggedIn, upload.array('images'), validateCampground, catchAsync(campgrounds.createCamp));
 
 router.get('/new', isLoggedIn, campgrounds.createCampGet);
 // must be above :id or otherwise it will be caught by the (:id) route as they have same 
@@ -15,7 +20,7 @@ router.get('/new', isLoggedIn, campgrounds.createCampGet);
 
 router.route('/:id')
     .get(catchAsync(campgrounds.showCampGet))
-    .put(isLoggedIn, isAuthor, validateCampground, catchAsync(campgrounds.updateCamp))
+    .put(isLoggedIn, isAuthor, upload.array('images'), validateCampground, catchAsync(campgrounds.editCamp))
     .delete(isLoggedIn, isAuthor, catchAsync(campgrounds.deleteCamp));
 
 
