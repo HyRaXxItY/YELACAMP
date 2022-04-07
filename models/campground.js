@@ -8,14 +8,15 @@ const ImageSchema = new Schema({
 
 });
 
-ImageSchema.virtual('thumbnail').get(function () {
+ImageSchema.virtual('thumbnail').get(function() {
     return this.url.replace('/upload', '/upload/w_200');
 });
 
-ImageSchema.virtual('thumbnail2').get(function () {
+ImageSchema.virtual('thumbnail2').get(function() {
     return this.url.replace('/upload', '/upload/w_400');
 });
 
+const opts = { toJSON: { virtuals: true } };
 
 const CampgroundSchema = new Schema({
     author: {
@@ -42,14 +43,23 @@ const CampgroundSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Review'
     }]
+
+}, opts); // this makes the virtual work on json changed object too 
+
+CampgroundSchema.virtual('properties.popUpMarkup').get(function() {
+    return `<a href="/campgrounds/${this._id}" style="text-Decoration:none">${(this.title).toUpperCase()}</a> <br> 
+    <p>${this.location}</p>`;
 });
 
-CampgroundSchema.post('findOneAndDelete', async function (del) {
+
+
+
+CampgroundSchema.post('findOneAndDelete', async function(del) {
     if (del) {
         await Review.deleteMany({
             _id: {
-                $in: del.reviews   // specifying that, id is somewhere ''in'' del.reviews object 
-                //(its array , we have defined reviews array here remember ? )
+                $in: del.reviews // specifying that, id is somewhere ''in'' del.reviews object 
+                    //(its array , we have defined reviews array here remember ? )
             }
         })
     }
