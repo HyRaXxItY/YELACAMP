@@ -1,14 +1,17 @@
 mapboxgl.accessToken = token;
 const map = new mapboxgl.Map({
-    container: 'map',
+    container: 'cluster',
     style: 'mapbox://styles/mapbox/satellite-v9',
     center: [-103.5917, 40.6699],
     zoom: 3
 });
 
 
+map.addControl(new mapboxgl.NavigationControl());
+
 
 map.on('load', () => {
+
     // Add a new source from our GeoJSON data and
     // set the 'cluster' option to true. GL-JS will
     // add the point_count property to your source data.
@@ -21,6 +24,7 @@ map.on('load', () => {
         clusterMaxZoom: 14, // Max zoom to cluster points on
         clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
     });
+
 
     map.addLayer({
         id: 'clusters',
@@ -129,4 +133,5 @@ map.on('load', () => {
     map.on('mouseleave', 'clusters', () => {
         map.getCanvas().style.cursor = '';
     });
+
 });

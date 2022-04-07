@@ -74,9 +74,8 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-
 passport.use(new LocalStrategy(User.authenticate()));
+
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
@@ -96,7 +95,7 @@ app.use('/campgrounds/:id/reviews', reviewsRoute);
 app.use('/auth', usersRoute);
 
 app.get('/', (req, res) => {
-    res.render('campgrounds/home')
+    res.render('home')
 })
 
 
@@ -104,8 +103,8 @@ app.all('*', (req, res, next) => {
     next(new ExpressError('PAGE NOT FOUND', 404))
 })
 app.use((err, req, res, next) => {
-    const { status_code = 404, message = 'oh boy, we got some error there' } = err;
-
+    const { status_code = 500 } = err;
+    if (!err.message) err.message = 'Something went wrong';
     res.status(status_code).render('error/error', { err });
 })
 

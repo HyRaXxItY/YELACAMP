@@ -1,18 +1,24 @@
 <% layout('layout/boilerplate') %>
 
-<div class="container justify-items-center text-center col-8 offset-2">
-    <h1> <%= err.status_code %> </h1>
-    <h4> Page could not be found</h4>
-    <div class="alert alert-danger">
-        <h4> <%= err.message %> </h4>
+    <div class="container justify-items-center text-center col-8 offset-2">
+        <h1>
+            <%= err.status_code %>
+        </h1>
+        <h4> Page could not be found</h4>
+        <div class="alert alert-danger">
+            <h4>
+                <%= err.message %>
+            </h4>
 
 
-        <h6> <%= err.stack %> </h6>
-    </div>
-    <div class="button">
-        <button class="btn btn-info">
-            <a href="/campgrounds" style="text-decoration:none; color:black">Back to Home Page</a>
+            <h6>
+                <%= err.stack %>
+            </h6>
+        </div>
+        <div class="button">
+            <button class="btn btn-info">
+            <a href="/" style="text-decoration:none; color:black">Back to Home Page</a>
         </button>
+        </div>
     </div>
-</div>
-<br>
+    <br>
