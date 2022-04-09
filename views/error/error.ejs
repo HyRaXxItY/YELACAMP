@@ -4,16 +4,16 @@
         <h1>
             <%= err.status_code %>
         </h1>
-        <h4> Page could not be found</h4>
         <div class="alert alert-danger">
             <h4>
                 <%= err.message %>
             </h4>
 
-
-            <h6>
-                <%= err.stack %>
-            </h6>
+            <% if (process.env.NODE_ENV !== 'production') { %>
+                <p>
+                    <%= err.stack %>
+                </p>
+                <% } %>
         </div>
         <div class="button">
             <button class="btn btn-info">

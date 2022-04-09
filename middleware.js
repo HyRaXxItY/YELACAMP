@@ -4,7 +4,7 @@ const Campground = require('./models/campground.js');
 const Review = require('./models/review.js');
 
 
-module.exports.validateReview = function (err, req, res, next) {
+module.exports.validateReview = function(err, req, res, next) {
     const { error } = reviewSchema.validate(req.body);
     console.log(error);
     if (error) {
@@ -16,7 +16,7 @@ module.exports.validateReview = function (err, req, res, next) {
 }
 
 
-module.exports.isLoggedIn = function (req, res, next) {
+module.exports.isLoggedIn = function(req, res, next) {
     console.log(req.user);
     if (!req.isAuthenticated()) {
         req.session.returnTo = req.originalUrl;
@@ -38,7 +38,7 @@ module.exports.validateCampground = (err, req, res, next) => {
 }
 
 
-module.exports.isAuthor = async (req, res, next) => {
+module.exports.isAuthor = async(req, res, next) => {
     const { id } = req.params;
     const campground = await Campground.findById(id);
     if (!campground.author.equals(req.user._id)) {
@@ -48,7 +48,7 @@ module.exports.isAuthor = async (req, res, next) => {
     next();
 }
 
-module.exports.isReviewAuthor = async (req, res, next) => {
+module.exports.isReviewAuthor = async(req, res, next) => {
     const { id, reviewId } = req.params;
     const review = await Review.findById(reviewId);
     if (!review.author.equals(req.user._id)) {
@@ -57,4 +57,3 @@ module.exports.isReviewAuthor = async (req, res, next) => {
     }
     next();
 }
-
