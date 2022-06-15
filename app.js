@@ -14,7 +14,7 @@ const methodOverride = require('method-override');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const User = require('./models/user');
-const MongoDBStore = require("connect-mongo"); //works differently now, see the docs for more info
+const MongoDBStore = require("connect-mongo"); //works differently now, see the docs for more info ..(session)
 
 const mongoSanitize = require('express-mongo-sanitize');
 
@@ -24,7 +24,8 @@ const campgroundsRoute = require('./routes/campgrounds');
 const reviewsRoute = require('./routes/reviews');
 const usersRoute = require('./routes/users');
 
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+const dbUrl = process.env.DB_URL;
+// const dbUrl = 'mongodb://localhost:27017/yelp-camp';
 //mongodb://localhost:27017/yelp-camp
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,
@@ -62,8 +63,8 @@ app.use(mongoSanitize({
 const secret = process.env.SESSION_SECRET || 'this is the secret';
 
 // const store = new MongoDBStore({
-//     url: "mongodb://localhost:27017/yelp-camp",
-//     secret: 'ThisBetterBeAGoodShit',
+//     url: dbUrl,
+//     secret: secret,
 //     touchAfter: 24 * 3600, //total seconds
 // });
 
@@ -78,7 +79,7 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: true,
     cookie: {
-        secure: true,
+        // secure: true,
         httpOnly: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 1,
         maxAge: 1000 * 60 * 60 * 24 * 7
@@ -90,6 +91,55 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+// app.use(helmet());
+
+//url let-out
+
+// const scriptSrcUrls = [
+//     "https://stackpath.bootstrapcdn.com",
+//     "https://api.tiles.mapbox.com",
+//     "https://api.mapbox.com",
+//     "https://kit.fontawesome.com",
+//     "https://cdnjs.cloudflare.com",
+//     "https://cdn.jsdelivr.net",
+// ];
+// const styleSrcUrls = [
+//     "https://kit-free.fontawesome.com",
+//     "https://stackpath.bootstrapcdn.com",
+//     "https://api.mapbox.com",
+//     "https://api.tiles.mapbox.com",
+//     "https://fonts.googleapis.com",
+//     "https://use.fontawesome.com",
+// ];
+// const connectSrcUrls = [
+//     "https://api.mapbox.com",
+//     "https://*.tiles.mapbox.com",
+//     "https://events.mapbox.com",
+// ];
+// const fontSrcUrls = [];
+// app.use(
+//     helmet.contentSecurityPolicy({
+//         directives: {
+//             defaultSrc: [],
+//             connectSrc: ["'self'", ...connectSrcUrls],
+//             scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+//             styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+//             workerSrc: ["'self'", "blob:"],
+//             childSrc: ["blob:"],
+//             objectSrc: [],
+//             imgSrc: [
+//                 "'self'",
+//                 "blob:",
+//                 "data:",
+//                 "https://res.cloudinary.com/douqbebwk/", //SHOULD MATCH YOUR CLOUDINARY ACCOUNT! 
+//                 "https://images.unsplash.com",
+//             ],
+//             fontSrc: ["'self'", ...fontSrcUrls],
+//         },
+//     })
+// );
+
+//let-out complete
 
 
 app.use(passport.initialize());
@@ -108,11 +158,11 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/', usersRoute);
+
 app.use('/campgrounds', campgroundsRoute);
 
 app.use('/campgrounds/:id/reviews', reviewsRoute);
-
-app.use('/auth', usersRoute);
 
 app.get('/', (req, res) => {
     res.render('home')
@@ -133,4 +183,5 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
 
     console.log(`serving on port ${port}`);
+
 })

@@ -1,22 +1,22 @@
 const User = require('../models/user');
 const passport = require('passport');
+const user = require('../models/user');
 
 
-module.exports.register = async (req, res, next) => {
+module.exports.register = async(req, res, next) => {
     try {
         const { email, username, password } = req.body;
-        const newUser = new User({ email, username, password });
+        const newUser = new User({ email, username });
         const dis = await User.register(newUser, password);
         req.login(dis, err => {
             if (err) return next(err);
             req.flash('success', 'You have been registered and logged in!');
-            return res.redirect('/campgrounds');
+            res.redirect('/campgrounds');
         });
-    }
-    catch (e) {
+    } catch (e) {
         req.flash('error', e.message);
         console.log(e);
-        res.redirect('auth/register');
+        res.redirect('register');
 
     }
 }

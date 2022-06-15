@@ -7,16 +7,16 @@ const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 
 
-module.exports.index = async (req, res) => {
+module.exports.index = async(req, res) => {
     const campground = await Campground.find({});
-    res.render('campgrounds/index', { campground })
+    res.render('campgrounds/index', { campground, currentUser: req.user });
 }
 
 module.exports.createCampGet = (req, res) => {
     res.render('campgrounds/new');
 }
 
-module.exports.createCamp = async (req, res, next) => {
+module.exports.createCamp = async(req, res, next) => {
     const geoData = await geocoder.forwardGeocode({
         query: req.body.campground.location,
         limit: 1
@@ -25,7 +25,8 @@ module.exports.createCamp = async (req, res, next) => {
     const campground = new Campground(req.body.campground);
     campground.geometry = geometry;
     campground.images = req.files.map(file => ({
-        url: file.path, filename: file.filename
+        url: file.path,
+        filename: file.filename
     }));
     campground.author = req.user._id;
     await campground.save();
@@ -36,14 +37,14 @@ module.exports.createCamp = async (req, res, next) => {
 }
 
 
-module.exports.showCampGet = async (req, res) => {
+module.exports.showCampGet = async(req, res) => {
     const { id } = req.params;
     const campground = await Campground.findById(id)
         .populate({
             path: 'reviews',
             populate: {
                 path: 'author' // for populating the author of the path ('reviews')
-                // reviews and different author as cmp to campground author
+                    // reviews and different author as cmp to campground author
             }
 
         }).populate('author');
@@ -52,13 +53,12 @@ module.exports.showCampGet = async (req, res) => {
     if (!campground) {
         req.flash('error', 'Campground not found');
         res.redirect('/campgrounds');
-    }
-    else {
+    } else {
         res.render('campgrounds/show', { campground });
     }
 }
 
-module.exports.editCampGet = async (req, res) => {
+module.exports.editCampGet = async(req, res) => {
 
     const { id } = req.params;
     const campground = await Campground.findById(id);
@@ -73,11 +73,12 @@ module.exports.editCampGet = async (req, res) => {
     res.render('campgrounds/edit', { campground })
 }
 
-module.exports.editCamp = async (req, res) => {
+module.exports.editCamp = async(req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
+    const campground = await Campground.findByIdAndUpdate(id, {...req.body.campground });
     const img = req.files.map(file => ({
-        url: file.path, filename: file.filename
+        url: file.path,
+        filename: file.filename
     }))
     campground.images.push(...img);
     await campground.save()
@@ -93,9 +94,9 @@ module.exports.editCamp = async (req, res) => {
     res.redirect(`/campgrounds/${campground._id}`)
 }
 
-module.exports.deleteCamp = async (req, res) => {
+module.exports.deleteCamp = async(req, res) => {
     const { id } = req.params;
-    const campground = await Campground.findByIdAndDelete(id);
+    await Campground.findByIdAndDelete(id);
     req.flash('success', 'Campground deleted successfully');
     // res.render('campgrounds/show', { camp })
     res.redirect(`/campgrounds`);
